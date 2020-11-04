@@ -18,12 +18,37 @@ namespace PlaceMyBet.Models
 
         }
 
-        internal Apuesta Retrieve()
+        internal List<Apuesta> RetrieveList()
         {
 
             MySqlConnection con = Connect();
             MySqlCommand command = con.CreateCommand();
             command.CommandText = "SELECT * FROM Apuesta";
+
+            con.Open();
+            MySqlDataReader res = command.ExecuteReader();
+
+            Apuesta a = null;
+            List<Apuesta> apuesta = new List<Apuesta>();
+
+            while (res.Read())
+            {
+
+                Debug.WriteLine("Recuperado: " + res.GetInt16(0) + res.GetDouble(1) + res.GetString(2) + res.GetDouble(3) + res.GetString(4) + res.GetInt16(5) + res.GetString(6));
+                a = new Apuesta(res.GetInt16(0), res.GetDouble(1), res.GetString(2), res.GetDouble(3), res.GetString(4), res.GetInt16(5), res.GetString(6));
+                apuesta.Add(a);
+
+            }
+            return apuesta;
+        }
+
+        internal Apuesta Retrieve(int Id)
+        {
+
+            MySqlConnection con = Connect();
+            MySqlCommand command = con.CreateCommand();
+            command.CommandText = "SELECT * FROM Apuesta WHERE ID=@id";
+            command.Parameters.AddWithValue("@id", Id);
 
             con.Open();
             MySqlDataReader res = command.ExecuteReader();
