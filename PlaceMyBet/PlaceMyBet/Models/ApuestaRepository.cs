@@ -19,12 +19,45 @@ namespace PlaceMyBet.Models
 
         }
 
-        internal ApuestaDTO Retrieve()
+        internal List<ApuestaDTO> RetrieveList()
         {
 
             MySqlConnection con = Connect();
             MySqlCommand command = con.CreateCommand();
             command.CommandText = "SELECT * FROM Apuesta";
+            try
+            {
+                con.Open();
+                MySqlDataReader res = command.ExecuteReader();
+
+                ApuestaDTO a = null;
+                List<ApuestaDTO> apuestaDTO = new List<ApuestaDTO>();
+                while (res.Read())
+                {
+                    Debug.WriteLine("Recuperado: " + res.GetDouble(1) + res.GetString(2) + res.GetDouble(3) + res.GetString(4) + res.GetInt16(5) + res.GetString(6));
+                    a = new ApuestaDTO(res.GetDouble(1), res.GetString(2), res.GetDouble(3), res.GetString(4), res.GetInt16(5), res.GetString(6));
+                    apuestaDTO.Add(a);
+                }
+                con.Close();
+                return apuestaDTO;
+            }
+            catch (MySqlException a)
+            {
+
+                Debug.WriteLine("Se ha producido un error de conexión");
+                return null;
+
+            }
+        }
+
+
+        internal ApuestaDTO Retrieve(int Id)
+        {
+
+            MySqlConnection con = Connect();
+            MySqlCommand command = con.CreateCommand();
+            command.CommandText = "SELECT * FROM Apuesta WHERE ID=@id";
+            command.Parameters.AddWithValue("@id", Id);
             try
             {
                 con.Open();

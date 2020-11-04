@@ -19,12 +19,35 @@ namespace PlaceMyBet.Models
 
         }
 
-        internal Usuario Retrieve()
+        internal List<Usuario> RetrieveList()
         {
 
             MySqlConnection con = Connect();
             MySqlCommand command = con.CreateCommand();
             command.CommandText = "SELECT * FROM Usuario";
+
+            con.Open();
+            MySqlDataReader res = command.ExecuteReader();
+
+            Usuario u = null;
+            List<Usuario> usuario = new List<Usuario>();
+            while (res.Read())
+            {
+
+                Debug.WriteLine("Recuperado: " + res.GetString(0) + res.GetString(1) + res.GetString(2) + res.GetInt16(3));
+                u = new Usuario(res.GetString(0), res.GetString(1), res.GetString(2), res.GetInt16(3));
+                usuario.Add(u);
+            }
+            return usuario;
+        }
+
+        internal Usuario Retrieve(string Email)
+        {
+
+            MySqlConnection con = Connect();
+            MySqlCommand command = con.CreateCommand();
+            command.CommandText = "SELECT * FROM Usuario WHERE Email=@email";
+            command.Parameters.AddWithValue("@email", Email);
 
             con.Open();
             MySqlDataReader res = command.ExecuteReader();

@@ -20,12 +20,36 @@ namespace PlaceMyBet.Models
 
         }
 
-        internal MercadoDTO Retrieve()
+        internal List<MercadoDTO> RetrieveList()
         {
 
             MySqlConnection con = Connect();
             MySqlCommand command = con.CreateCommand();
             command.CommandText = "SELECT * FROM Mercado";
+
+            con.Open();
+            MySqlDataReader res = command.ExecuteReader();
+
+            MercadoDTO m = null;
+            List<MercadoDTO> mercadoDTO = new List<MercadoDTO>();
+            while (res.Read())
+            {
+                Debug.WriteLine("Recuparado: " + res.GetDouble(1) + res.GetDouble(2) + res.GetDouble(3));
+                m = new MercadoDTO(res.GetDouble(1), res.GetDouble(2), res.GetDouble(3));
+                mercadoDTO.Add(m);
+            }
+
+            return mercadoDTO;
+
+        }
+
+        internal MercadoDTO Retrieve(int Id)
+        {
+
+            MySqlConnection con = Connect();
+            MySqlCommand command = con.CreateCommand();
+            command.CommandText = "SELECT * FROM Mercado WHERE ID = @id";
+            command.Parameters.AddWithValue("@id", Id);
 
             con.Open();
             MySqlDataReader res = command.ExecuteReader();
