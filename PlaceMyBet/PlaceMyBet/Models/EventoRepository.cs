@@ -18,12 +18,40 @@ using MySql.Data.MySqlClient;
                 return con;
 
             }
-            internal EventoDTO Retrieve()
+
+        internal List<Evento> RetrieveList()
+        {
+
+            MySqlConnection con = Connect();
+            MySqlCommand command = con.CreateCommand();
+            command.CommandText = "SELECT * FROM Evento";
+
+            con.Open();
+            MySqlDataReader res = command.ExecuteReader();
+
+            Evento e = null;
+            List<Evento> evento = new List<Evento>();
+
+            while (res.Read())
+            {
+                Debug.WriteLine("Recuperado: " + res.GetString(1) + res.GetString(2) + res.GetString(3));
+                e = new Evento(res.GetInt16(0), res.GetString(1), res.GetString(2), res.GetString(3), res.GetInt16(4));
+                evento.Add(e);
+            }
+
+
+            return evento;
+
+        }
+
+
+        internal EventoDTO Retrieve(int Id)
             {
 
                 MySqlConnection con = Connect();
                 MySqlCommand command = con.CreateCommand();
-                command.CommandText = "SELECT * FROM Evento";
+                command.CommandText = "SELECT * FROM Evento WHERE ID=@id";
+            command.Parameters.AddWithValue("@id", Id);
 
                 con.Open();
                 MySqlDataReader res = command.ExecuteReader();
